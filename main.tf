@@ -1,7 +1,7 @@
 # Create the main VPC for the AWS Landing Zone
 
 resource "aws_vpc" "main" {
-  cidr_block           = "10.0.0.0/16"
+  cidr_block           = var.vpc_cidr
   enable_dns_support   = true
   enable_dns_hostnames = true
 
@@ -13,7 +13,7 @@ resource "aws_vpc" "main" {
 
 resource "aws_subnet" "public_subnet" {
   vpc_id                  = aws_vpc.main.id
-  cidr_block              = "10.0.1.0/24"
+  cidr_block              = var.public_subnet_cidr
   availability_zone       = "ap-south-1a"
   map_public_ip_on_launch = true
 
@@ -25,7 +25,7 @@ resource "aws_subnet" "public_subnet" {
 
 resource "aws_subnet" "private_subnet" {
   vpc_id            = aws_vpc.main.id
-  cidr_block        = "10.0.2.0/24"
+  cidr_block        = var.private_subnet_cidr
   availability_zone = "ap-south-1a"
 
   tags = {
@@ -255,18 +255,18 @@ data "aws_ami" "amazon_linux" {
 
 resource "aws_instance" "bastion" {
 
-  ami                         = data.aws_ami.amazon_linux.id
-  instance_type               = "t3.micro"
-  
+  ami           = data.aws_ami.amazon_linux.id
+  instance_type = var.instance_type
+
   iam_instance_profile = aws_iam_instance_profile.ec2_profile.name
 
-  subnet_id                   = aws_subnet.public_subnet.id
+  subnet_id = aws_subnet.public_subnet.id
 
-  vpc_security_group_ids       = [aws_security_group.public_sg.id]
+  vpc_security_group_ids = [aws_security_group.public_sg.id]
 
-  key_name                    = aws_key_pair.terraform_key.key_name
+  key_name = aws_key_pair.terraform_key.key_name
 
-  associate_public_ip_address  = true
+  associate_public_ip_address = true
 
   tags = {
 
@@ -280,16 +280,16 @@ resource "aws_instance" "bastion" {
 
 resource "aws_instance" "private_server" {
 
-  ami                         = data.aws_ami.amazon_linux.id
-  instance_type               = "t3.micro"
+  ami           = data.aws_ami.amazon_linux.id
+  instance_type = var.instance_type
 
-  subnet_id                   = aws_subnet.private_subnet.id
+  subnet_id = aws_subnet.private_subnet.id
 
-  vpc_security_group_ids       = [aws_security_group.private_sg.id]
+  vpc_security_group_ids = [aws_security_group.private_sg.id]
 
-  key_name                    = aws_key_pair.terraform_key.key_name
+  key_name = aws_key_pair.terraform_key.key_name
 
-  associate_public_ip_address  = false
+  associate_public_ip_address = false
 
   tags = {
     Name = "Application-Server"
@@ -333,7 +333,7 @@ resource "aws_iam_role" "ec2_role" {
 
 resource "aws_iam_role_policy_attachment" "s3_readonly" {
 
-  role       = aws_iam_role.ec2_role.name
+  role = aws_iam_role.ec2_role.name
 
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
 
