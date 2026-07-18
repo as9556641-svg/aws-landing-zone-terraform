@@ -1,9 +1,5 @@
 # AWS Landing Zone using Terraform
 
-## Overview
-
-## Architecture
-
 ## Features
 - VPC
 - Public & Private Subnets
@@ -15,16 +11,6 @@
 - IAM Role
 - Remote Backend (S3)
 - DynamoDB State Locking
-
-## Folder Structure
-
-## Prerequisites
-
-## Terraform Commands
-
-## Project Workflow
-
-## Screenshots
 
 ## Future Enhancements
 - Terraform Modules
